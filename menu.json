@@ -1,20 +1,28 @@
 {
- "cafe": "HUNGER S",
- "tagline": "Your tagline here",
- "wa": "92300XXXXXXX",
- "cur": "Rs.",
- "logo": "",
+ "cafe": "Sobia's Kitchen",
+ "tagline": "Quality food in Desi style",
+ "wa": "44741653965",
+ "cur": "£",
+ "logo": "images/logo1794304721877.png",
  "cats": [
   {
-   "name": "Sample Category",
+   "name": "Meals",
    "notice": "",
    "items": [
     {
-     "n": "Sample Item",
+     "n": "Seekh Kebab Masala",
      "d": "Short description",
-     "p": 0,
+     "p": 8,
      "e": "🍽️",
-     "img": "",
+     "img": "images/p1794304810920.jpg",
+     "out": false
+    },
+    {
+     "n": "Daal Maash",
+     "d": "",
+     "p": 5,
+     "e": "🍽️",
+     "img": "images/p1794304804519.jpg",
      "out": false
     }
    ]
