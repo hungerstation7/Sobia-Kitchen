@@ -1,5 +1,5 @@
 {
- "cafe": "NEW BRAND NAME",
+ "cafe": "HUNGER S",
  "tagline": "Your tagline here",
  "wa": "92300XXXXXXX",
  "cur": "Rs.",
@@ -9,7 +9,14 @@
    "name": "Sample Category",
    "notice": "",
    "items": [
-    {"n": "Sample Item", "d": "Short description", "p": 0, "e": "🍽️", "img": "", "out": false}
+    {
+     "n": "Sample Item",
+     "d": "Short description",
+     "p": 0,
+     "e": "🍽️",
+     "img": "",
+     "out": false
+    }
    ]
   }
  ]
