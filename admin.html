@@ -31,7 +31,11 @@ label{display:block;font-size:.78rem;color:var(--mute);margin:8px 0 3px}
 <body>
 <div class="adm"><h2>Menu Admin</h2><div id="st"></div><div id="app"></div></div>
 <script>
-var CFG=JSON.parse(localStorage.getItem("hs_cfg")||"{}"),draft=null,sha=null,app=document.getElementById("app");
+var PATHREPO=location.pathname.split("/")[1]||"",PATHOWNER=location.hostname.split(".")[0],KEY="hs_cfg:"+location.hostname+"/"+PATHREPO.toLowerCase();
+function readCfg(){var c=null;try{c=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+  if(!c){try{var o=JSON.parse(localStorage.getItem("hs_cfg")||"null");if(o&&o.repo&&o.repo.toLowerCase()==PATHREPO.toLowerCase())c=o}catch(e){}}
+  return c||{}}
+var CFG=readCfg(),draft=null,sha=null,app=document.getElementById("app");
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function st(m){document.getElementById("st").textContent=m||""}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
@@ -44,7 +48,7 @@ async function api(path,opt){
   var j=await r.json();if(!r.ok)throw new Error(j.message||("Error "+r.status));return j;
 }
 function login(msg){
-  app.innerHTML='<section><h3>Connect to your GitHub repository</h3><p class="hint">One-time setup on this device. See README for how to create the token.</p><label>GitHub username</label><input type="text" id="o" value="'+esc(CFG.owner||"")+'"><label>Repository name</label><input type="text" id="r" value="'+esc(CFG.repo||"")+'"><label>Branch</label><input type="text" id="b" value="'+esc(CFG.branch||"main")+'"><label>Access token</label><input type="password" id="t" value="'+esc(CFG.token||"")+'"><div class="ctl"><button class="pri" data-a="connect">Connect</button></div></section>';
+  app.innerHTML='<section><h3>Connect to your GitHub repository</h3><p class="hint">One-time setup on this device. See README for how to create the token.</p><label>GitHub username</label><input type="text" id="o" value="'+esc(CFG.owner||PATHOWNER)+'"><label>Repository name</label><input type="text" id="r" value="'+esc(CFG.repo||PATHREPO)+'"><label>Branch</label><input type="text" id="b" value="'+esc(CFG.branch||"main")+'"><label>Access token</label><input type="password" id="t" value="'+esc(CFG.token||"")+'"><div class="ctl"><button class="pri" data-a="connect">Connect</button></div></section>';
   st(msg||"");
 }
 async function load(){
@@ -56,7 +60,7 @@ function getp(p){var o=draft;p.split(".").forEach(function(k){o=o[k]});return o}
 function setp(p,v){var a=p.split("."),l=a.pop(),o=draft;a.forEach(function(k){o=o[k]});o[l]=v}
 function fld(label,p,type){return '<label>'+label+'</label><input type="'+(type||"text")+'" data-p="'+p+'" value="'+esc(getp(p))+'"'+(type=="number"?' min="0" step="any"':'')+'>'}
 function renderAdmin(){
-  var h='<div class="abar"><b>Editing menu</b><button data-a="logout">Disconnect</button><button class="pri" data-a="save">Save &amp; Publish</button></div>';
+  var h='<div class="abar"><b>Editing: '+esc(CFG.owner+"/"+CFG.repo)+'</b><button data-a="logout">Disconnect</button><button class="pri" data-a="save">Save &amp; Publish</button></div>';
   h+='<section><h3>Café settings</h3>'+fld("Café name","cafe")+fld("Tagline","tagline")+fld("WhatsApp number (country code, digits only)","wa")+fld("Currency symbol","cur")+'<label>Logo</label><div class="ctl">'+(draft.logo?'<img src="'+esc(draft.logo)+'" height="56" style="background:#fff;border-radius:8px;padding:3px" alt="">':'<span class="hint">No logo</span>')+'<button data-a="pick">🖼️ Choose logo</button><input type="file" accept="image/*" data-logo="1" style="display:none">'+(draft.logo?'<button data-a="rl">Remove logo</button>':'')+'</div></section>';
   draft.cats.forEach(function(c,ci){
     h+='<section><h3>Category '+(ci+1)+'</h3>'+fld("Category name","cats."+ci+".name")+fld("Notice shown above items (optional)","cats."+ci+".notice");
@@ -107,8 +111,8 @@ app.addEventListener("input",function(e){var t=e.target,p=t.getAttribute("data-p
 app.addEventListener("change",function(e){if(e.target.getAttribute("data-ph"))photo(e.target);else if(e.target.getAttribute("data-logo"))logoUp(e.target)});
 app.addEventListener("click",function(e){
   var t=e.target,a=t.getAttribute("data-a");if(!a)return;
-  if(a=="connect"){CFG={owner:document.getElementById("o").value.trim(),repo:document.getElementById("r").value.trim(),branch:document.getElementById("b").value.trim()||"main",token:document.getElementById("t").value.trim()};localStorage.setItem("hs_cfg",JSON.stringify(CFG));return load()}
-  if(a=="logout"){localStorage.removeItem("hs_cfg");CFG={};draft=null;return login()}
+  if(a=="connect"){CFG={owner:document.getElementById("o").value.trim(),repo:document.getElementById("r").value.trim(),branch:document.getElementById("b").value.trim()||"main",token:document.getElementById("t").value.trim()};localStorage.setItem(KEY,JSON.stringify(CFG));return load()}
+  if(a=="logout"){localStorage.removeItem(KEY);localStorage.removeItem("hs_cfg");CFG={};draft=null;return login()}
   if(!draft)return;
   if(a=="pick"){var fi=t.parentNode.querySelector("input[type=file]");if(fi)fi.click();return}
   if(a=="save")return save();
